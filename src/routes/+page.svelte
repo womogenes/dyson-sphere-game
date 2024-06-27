@@ -114,6 +114,16 @@
     href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
     rel="stylesheet"
   />
+
+  <meta property="og:title" content="PHOTON FARMERS" />
+  <meta
+    property="og:description"
+    content="a game about the future of solar energy"
+  />
+  <meta
+    property="og:image"
+    content="https://i.ibb.co/XF89PpH/photon-farmers-og.png"
+  />
 </svelte:head>
 
 <div class="flex h-screen w-full text-white">

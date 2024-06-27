@@ -19,6 +19,7 @@
     };
 
     p5.draw = () => {
+      dt = 0.1 / (60 / p5.frameRate());
       t += dt;
 
       let sunRad = 200;
@@ -55,7 +56,7 @@
       p5.circle(mercury.x, mercury.y, mercuryRad * 2);
 
       // Update swarm
-      if (p5.frameCount % 10 === 1 && swarm.length < 1e2) {
+      if (p5.frameCount % 10 === 1 && swarm.length < 1e3) {
         let theta2 = theta + Math.random() * Math.PI;
         swarm.push({
           x: mercury.x + mercuryRad * Math.cos(theta2),
@@ -79,14 +80,14 @@
         sat.vy += (mu / d2) * -normY * dt;
 
         // Control if too close
-        if (d2 < sunRad * sunRad * 3 * 3) {
+        if (d2 < sunRad * sunRad * 2 * 2) {
           let targetVx = Math.sqrt(mu / d) * -normY;
           let targetVy = Math.sqrt(mu / d) * normX;
 
           let dVx = targetVx - sat.vx;
           let dVy = targetVy - sat.vy;
           let norm = Math.sqrt(dVx * dVx + dVy * dVy);
-          let power = 5;
+          let power = 20;
 
           sat.vx += (dVx / norm) * power * dt;
           sat.vy += (dVy / norm) * power * dt;
@@ -113,15 +114,19 @@
   />
 </svelte:head>
 
-<div class="flex h-screen w-full bg-black text-white">
-  <div class="z-10 flex w-full flex-col items-center p-32">
+<div class="flex h-screen w-full text-white">
+  <div
+    class="z-10 flex h-full w-full flex-col items-center justify-between px-4 text-center"
+  >
     <h1
-      class="mb-2 text-center font-[Montserrat] text-6xl font-black uppercase"
+      class="mb-2 pt-10 font-title text-6xl font-black uppercase tracking-tight sm:pt-40 sm:text-8xl"
     >
       Photon Farmers
     </h1>
-    <p>a game about building a dyson sphere</p>
-    <p>coming august 2024</p>
+    <div class="pb-10 sm:pb-40">
+      <p>a game about the future of solar energy</p>
+      <p>coming august 2024</p>
+    </div>
   </div>
-  <div class="absolute"><P5 {sketch} /></div>
+  <div class="fixed"><P5 {sketch} /></div>
 </div>

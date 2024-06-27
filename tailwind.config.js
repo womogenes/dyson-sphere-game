@@ -4,6 +4,7 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: ['Inter', 'Roboto', 'Arial', 'sans-serif'],
+        title: ['Montserrat', 'Roboto', 'Arial', 'sans-serif'],
       },
     },
   },

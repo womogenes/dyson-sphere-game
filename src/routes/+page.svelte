@@ -124,6 +124,10 @@
     property="og:image"
     content="https://i.ibb.co/XF89PpH/photon-farmers-og.png"
   />
+  <meta
+    property="twitter:image"
+    content="https://i.ibb.co/XF89PpH/photon-farmers-og.png"
+  />
 </svelte:head>
 
 <div class="flex h-screen w-full text-white">

@@ -101,7 +101,7 @@
 
 <svelte:head>
   <link rel="icon" href="https://fav.farm/🪩" />
-  <title>Svelte</title>
+  <title>Photon Farmers</title>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -115,6 +115,9 @@
     rel="stylesheet"
   />
 
+  <!-- Meta tags -->
+  <meta property="og:url" content="https://dyson-sphere-game.pages.dev/" />
+  <meta property="og:type" content="website" />
   <meta property="og:title" content="PHOTON FARMERS" />
   <meta
     property="og:description"
@@ -122,11 +125,22 @@
   />
   <meta
     property="og:image"
-    content="https://i.ibb.co/XF89PpH/photon-farmers-og.png"
+    content="https://i.ibb.co/8mVz0bX/photon-farmers-og-small.png"
   />
   <meta
-    property="twitter:image"
-    content="https://i.ibb.co/XF89PpH/photon-farmers-og.png"
+    name="twitter:card"
+    content="https://i.ibb.co/ZxhQWwb/photon-farmers-og.png"
+  />
+  <meta property="twitter:domain" content="dyson-sphere-game.pages.dev" />
+  <meta property="twitter:url" content="https://dyson-sphere-game.pages.dev/" />
+  <meta name="twitter:title" content="PHOTON FARMERS" />
+  <meta
+    name="twitter:description"
+    content="a game about the future of solar energy"
+  />
+  <meta
+    name="twitter:image"
+    content="https://i.ibb.co/ZxhQWwb/photon-farmers-og.png"
   />
 </svelte:head>
 

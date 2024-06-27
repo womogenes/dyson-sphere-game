@@ -5,6 +5,8 @@
 
   const sketch = (p5) => {
     let swarm = [];
+    let t = 0;
+    let dt = 0.1;
 
     p5.setup = () => {
       p5.createCanvas(width, height);
@@ -17,37 +19,79 @@
     };
 
     p5.draw = () => {
-      p5.background('#161519');
+      t += dt;
 
       let sunRad = 200;
       let mercuryRad = 20;
-      let mercuryOrbitRad = 400;
-
-      p5.noStroke();
+      let mercuryOrbitRad = sunRad * 5;
 
       let minAxis = Math.min(width, height);
-      let scale = (minAxis / 400) * 0.2;
+      let scale = (minAxis / 450) * 0.2;
+
+      p5.background('#161519');
+      p5.translate(width / 2, height / 2);
+      p5.scale(scale);
+      p5.noStroke();
 
       // Sun
       p5.fill('#ebc034');
-      p5.circle(width / 2, height / 2, sunRad * scale);
+      p5.circle(0, 0, sunRad * 2);
 
-      // Mercury
-      let theta = p5.frameCount * 0.005;
-      p5.fill('#84868a');
-      p5.circle(
-        width / 2 + mercuryOrbitRad * Math.cos(theta) * scale,
-        height / 2 + mercuryOrbitRad * Math.sin(theta) * scale,
-        mercuryRad * scale,
-      );
-
+      // Swarm
       p5.fill('#dddddd');
       for (let { x, y } of swarm) {
-        p5.circle(x, y, 5 * scale, 5 * scale);
+        p5.circle(x, y, 5, 5);
       }
 
-      if (p5.frameCount % 10 === 0)
-        swarm.push({ x: Math.random() * width, y: Math.random() * height });
+      // Mercury
+      let theta = t * 0.05;
+      let mercury = {
+        x: mercuryOrbitRad * Math.cos(theta),
+        y: mercuryOrbitRad * Math.sin(theta),
+        vx: mercuryOrbitRad * -Math.sin(theta) * 0.05,
+        vy: mercuryOrbitRad * Math.cos(theta) * 0.05,
+      };
+      p5.fill('#84868a');
+      p5.circle(mercury.x, mercury.y, mercuryRad * 2);
+
+      // Update swarm
+      if (p5.frameCount % 10 === 1 && swarm.length < 1e2) {
+        let theta2 = theta + Math.random() * Math.PI;
+        swarm.push({
+          x: mercury.x + mercuryRad * Math.cos(theta2),
+          y: mercury.y + mercuryRad * Math.sin(theta2),
+          vx: mercury.vx * 0.5,
+          vy: mercury.vy * 0.5,
+        });
+      }
+
+      let mu = 2.56e6; // Gravitational constant
+      for (let sat of swarm) {
+        sat.x += sat.vx * dt;
+        sat.y += sat.vy * dt;
+
+        let d2 = sat.x * sat.x + sat.y * sat.y;
+        let d = Math.sqrt(d2);
+        let normX = sat.x / d;
+        let normY = sat.y / d;
+
+        sat.vx += (mu / d2) * -normX * dt;
+        sat.vy += (mu / d2) * -normY * dt;
+
+        // Control if too close
+        if (d2 < sunRad * sunRad * 3 * 3) {
+          let targetVx = Math.sqrt(mu / d) * -normY;
+          let targetVy = Math.sqrt(mu / d) * normX;
+
+          let dVx = targetVx - sat.vx;
+          let dVy = targetVy - sat.vy;
+          let norm = Math.sqrt(dVx * dVx + dVy * dVy);
+          let power = 5;
+
+          sat.vx += (dVx / norm) * power * dt;
+          sat.vy += (dVy / norm) * power * dt;
+        }
+      }
     };
   };
 </script>

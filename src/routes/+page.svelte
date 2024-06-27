@@ -12,6 +12,7 @@
       p5.createCanvas(width, height);
       for (let c of ['opacity-100', 'opacity-0'])
         document.querySelector('#sketch-container').classList.toggle(c);
+      p5.frameRate(60);
     };
 
     p5.windowResized = () => {
@@ -28,7 +29,7 @@
       let mercuryRad = 20;
       let mercuryOrbitRad = sunRad * 5;
 
-      let minAxis = Math.min(width, height);
+      let minAxis = Math.min(width * 2, height);
       let scale = (minAxis / 450) * 0.2;
 
       p5.background('#161519');
@@ -43,23 +44,23 @@
       // Swarm
       p5.fill('#dddddd');
       for (let { x, y } of swarm) {
-        p5.circle(x, y, 5, 5);
+        p5.circle(x, y, 5);
       }
 
       // Mercury
-      let theta = t * 0.05;
+      let theta = Math.PI / 2 + -t * 0.05;
       let mercury = {
         x: mercuryOrbitRad * Math.cos(theta),
         y: mercuryOrbitRad * Math.sin(theta),
-        vx: mercuryOrbitRad * -Math.sin(theta) * 0.05,
-        vy: mercuryOrbitRad * Math.cos(theta) * 0.05,
+        vx: mercuryOrbitRad * -Math.sin(theta) * -0.05,
+        vy: mercuryOrbitRad * Math.cos(theta) * -0.05,
       };
       p5.fill('#84868a');
       p5.circle(mercury.x, mercury.y, mercuryRad * 2);
 
       // Update swarm
-      if (p5.frameCount % 10 === 1 && swarm.length < 1e3) {
-        let theta2 = theta + Math.random() * Math.PI;
+      if (p5.frameCount % 5 === 1 && swarm.length < 1e3) {
+        let theta2 = theta + (1 + (Math.random() - 0.5) * 0.8) * Math.PI;
         swarm.push({
           x: mercury.x + mercuryRad * Math.cos(theta2),
           y: mercury.y + mercuryRad * Math.sin(theta2),
@@ -83,8 +84,8 @@
 
         // Control if too close
         if (d2 < sunRad * sunRad * 2 * 2) {
-          let targetVx = Math.sqrt(mu / d) * -normY;
-          let targetVy = Math.sqrt(mu / d) * normX;
+          let targetVx = Math.sqrt(mu / d) * normY;
+          let targetVy = Math.sqrt(mu / d) * -normX;
 
           let dVx = targetVx - sat.vx;
           let dVy = targetVy - sat.vy;
@@ -144,7 +145,7 @@
   />
 </svelte:head>
 
-<div class="flex h-screen w-full text-white">
+<div class="flex h-full w-full text-white">
   <div
     class="z-10 flex h-full w-full flex-col items-center justify-between px-4 text-center"
   >
@@ -155,7 +156,7 @@
     </h1>
     <div class="pb-10 sm:pb-40">
       <p>a game about the future of solar energy</p>
-      <p>coming august 2024</p>
+      <p class="opacity-60">coming august 2024</p>
     </div>
   </div>
   <div
@@ -165,3 +166,10 @@
     <P5 {sketch} />
   </div>
 </div>
+
+<style>
+  :global(body),
+  :global(html) {
+    height: 100%;
+  }
+</style>

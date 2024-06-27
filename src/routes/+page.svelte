@@ -10,6 +10,8 @@
 
     p5.setup = () => {
       p5.createCanvas(width, height);
+      for (let c of ['opacity-100', 'opacity-0'])
+        document.querySelector('#sketch-container').classList.toggle(c);
     };
 
     p5.windowResized = () => {
@@ -128,5 +130,10 @@
       <p>coming august 2024</p>
     </div>
   </div>
-  <div class="fixed"><P5 {sketch} /></div>
+  <div
+    id="sketch-container"
+    class="fixed opacity-0 transition-opacity duration-1000"
+  >
+    <P5 {sketch} />
+  </div>
 </div>

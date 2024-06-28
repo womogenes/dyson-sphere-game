@@ -1,13 +1,19 @@
 <script>
   import P5 from 'p5-svelte';
+  import { onDestroy } from 'svelte';
+
   let width = window.innerWidth;
   let height = window.innerHeight;
+
+  onDestroy(() => window.p5.remove());
 
   const sketch = (p5) => {
     let swarm = [];
     let t = 0;
     let dt = 0.1;
     let lastUpdated;
+    let id = Math.random();
+    window.p5 = p5;
 
     p5.setup = () => {
       p5.createCanvas(width, height);
@@ -129,7 +135,7 @@
 
 <div class="flex h-full w-full text-white">
   <div
-    class="z-10 flex h-full w-full flex-col items-center justify-between px-4 text-center"
+    class="z-10 flex h-full w-full flex-col items-center justify-between px-6 text-center"
   >
     <h1
       class="mb-2 pt-10 font-title text-6xl font-black uppercase tracking-tight sm:pt-40 sm:text-8xl"

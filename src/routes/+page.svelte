@@ -1,6 +1,5 @@
 <script>
   import P5 from 'p5-svelte';
-  import { linear } from 'svelte/easing';
   let width = window.innerWidth;
   let height = window.innerHeight;
 
@@ -8,12 +7,14 @@
     let swarm = [];
     let t = 0;
     let dt = 0.1;
+    let lastUpdated;
 
     p5.setup = () => {
       p5.createCanvas(width, height);
       for (let c of ['opacity-100', 'opacity-0'])
         document.querySelector('#sketch-container').classList.toggle(c);
-      p5.frameRate(60);
+      p5.frameRate(90);
+      lastUpdated = new Date();
     };
 
     p5.windowResized = () => {
@@ -23,7 +24,7 @@
     };
 
     p5.draw = () => {
-      dt = 0.1 / (60 / p5.frameRate());
+      dt = Math.min(new Date() - lastUpdated, 33) * 0.01;
       t += dt;
 
       let sunRad = 200;
@@ -41,9 +42,9 @@
         vy: mercuryOrbitRad * Math.cos(theta) * -0.05,
       };
 
-      // Update swarm
+      // Add new satellite to the swarm sometimes
       if (p5.frameCount % 5 === 1 && swarm.length < 1e3) {
-        let theta2 = theta + (1 + (Math.random() - 0.5) * 0.8) * Math.PI;
+        let theta2 = Math.random() * 2 * Math.PI;
         swarm.push({
           x: mercury.x + mercuryRad * Math.cos(theta2),
           y: mercury.y + mercuryRad * Math.sin(theta2),
@@ -92,29 +93,19 @@
       p5.fill('#ebc034');
       p5.circle(0, 0, sunRad * 2);
 
+      // Mercury
+      p5.fill('#84868a');
+      p5.noStroke();
+      p5.circle(mercury.x, mercury.y, mercuryRad * 2);
+
       // Swarm
       p5.fill('#dddddd');
       for (let sat of swarm) {
         p5.circle(sat.x, sat.y, 5);
       }
 
-      p5.stroke('#ebc03440');
-      p5.strokeWeight(5);
-      swarm.forEach((sat, idx) => {
-        if (
-          sat.d < sunRad * 2.5 &&
-          idx % 2 === 0 &&
-          (Math.abs(sat.x + sat.y) < sunRad * Math.SQRT2 || sat.x < -sat.y)
-        ) {
-          p5.line(0, 0, sat.x, sat.y);
-          p5.line(sat.x, sat.y, -999999, -999999);
-        }
-      });
-
-      // Mercury
-      p5.fill('#84868a');
-      p5.noStroke();
-      p5.circle(mercury.x, mercury.y, mercuryRad * 2);
+      // Update timestamp
+      lastUpdated = new Date();
     };
   };
 </script>

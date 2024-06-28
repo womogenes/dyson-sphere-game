@@ -1,5 +1,6 @@
 <script>
   import P5 from 'p5-svelte';
+  import { linear } from 'svelte/easing';
   let width = window.innerWidth;
   let height = window.innerHeight;
 
@@ -32,22 +33,6 @@
       let minAxis = Math.min(width * 2, height);
       let scale = (minAxis / 450) * 0.2;
 
-      p5.background('#161519');
-      p5.translate(width / 2, height / 2);
-      p5.scale(scale);
-      p5.noStroke();
-
-      // Sun
-      p5.fill('#ebc034');
-      p5.circle(0, 0, sunRad * 2);
-
-      // Swarm
-      p5.fill('#dddddd');
-      for (let { x, y } of swarm) {
-        p5.circle(x, y, 5);
-      }
-
-      // Mercury
       let theta = Math.PI / 2 + -t * 0.05;
       let mercury = {
         x: mercuryOrbitRad * Math.cos(theta),
@@ -55,8 +40,6 @@
         vx: mercuryOrbitRad * -Math.sin(theta) * -0.05,
         vy: mercuryOrbitRad * Math.cos(theta) * -0.05,
       };
-      p5.fill('#84868a');
-      p5.circle(mercury.x, mercury.y, mercuryRad * 2);
 
       // Update swarm
       if (p5.frameCount % 5 === 1 && swarm.length < 1e3) {
@@ -71,21 +54,22 @@
 
       let mu = 2.56e6; // Gravitational constant
       for (let sat of swarm) {
+        sat.d2 = sat.x * sat.x + sat.y * sat.y;
+        sat.d = Math.sqrt(sat.d2);
+
         sat.x += sat.vx * dt;
         sat.y += sat.vy * dt;
 
-        let d2 = sat.x * sat.x + sat.y * sat.y;
-        let d = Math.sqrt(d2);
-        let normX = sat.x / d;
-        let normY = sat.y / d;
+        let normX = sat.x / sat.d;
+        let normY = sat.y / sat.d;
 
-        sat.vx += (mu / d2) * -normX * dt;
-        sat.vy += (mu / d2) * -normY * dt;
+        sat.vx += (mu / sat.d2) * -normX * dt;
+        sat.vy += (mu / sat.d2) * -normY * dt;
 
         // Control if too close
-        if (d2 < sunRad * sunRad * 2 * 2) {
-          let targetVx = Math.sqrt(mu / d) * normY;
-          let targetVy = Math.sqrt(mu / d) * -normX;
+        if (sat.d2 < sunRad * sunRad * 2 * 2) {
+          let targetVx = Math.sqrt(mu / sat.d) * normY;
+          let targetVy = Math.sqrt(mu / sat.d) * -normX;
 
           let dVx = targetVx - sat.vx;
           let dVy = targetVy - sat.vy;
@@ -96,6 +80,41 @@
           sat.vy += (dVy / norm) * power * dt;
         }
       }
+
+      // Draw stuff
+      p5.background('#161519');
+      p5.translate(width / 2, height / 2);
+      p5.scale(scale);
+      p5.noStroke();
+      p5.strokeWeight(0);
+
+      // Sun
+      p5.fill('#ebc034');
+      p5.circle(0, 0, sunRad * 2);
+
+      // Swarm
+      p5.fill('#dddddd');
+      for (let sat of swarm) {
+        p5.circle(sat.x, sat.y, 5);
+      }
+
+      p5.stroke('#ebc03440');
+      p5.strokeWeight(5);
+      swarm.forEach((sat, idx) => {
+        if (
+          sat.d < sunRad * 2.5 &&
+          idx % 2 === 0 &&
+          (Math.abs(sat.x + sat.y) < sunRad * Math.SQRT2 || sat.x < -sat.y)
+        ) {
+          p5.line(0, 0, sat.x, sat.y);
+          p5.line(sat.x, sat.y, -999999, -999999);
+        }
+      });
+
+      // Mercury
+      p5.fill('#84868a');
+      p5.noStroke();
+      p5.circle(mercury.x, mercury.y, mercuryRad * 2);
     };
   };
 </script>

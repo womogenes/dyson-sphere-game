@@ -89,7 +89,7 @@
       }
 
       // Draw stuff
-      p5.background('#161519');
+      p5.background('#18181b');
       p5.translate(width / 2, height / 2);
       p5.scale(scale);
       p5.noStroke();
@@ -117,20 +117,7 @@
 </script>
 
 <svelte:head>
-  <link rel="icon" href="https://fav.farm/🪩" />
   <title>Photon Farmers</title>
-
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
-    rel="stylesheet"
-  />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
-    rel="stylesheet"
-  />
 </svelte:head>
 
 <div class="flex h-full w-full text-white">
@@ -144,7 +131,10 @@
     </h1>
     <div class="pb-10 sm:pb-40">
       <p>a game about the future of solar energy</p>
-      <p class="opacity-60">coming august 2024</p>
+      <p>coming august 2024</p>
+      <p>
+        <a href="/game" class="underline opacity-60">(play the preview here)</a>
+      </p>
     </div>
   </div>
   <div

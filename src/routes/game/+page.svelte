@@ -13,7 +13,15 @@
   <title>Photon Farmers</title>
 </svelte:head>
 
-<div class="flex h-full w-full divide-x-2 divide-zinc-600 text-white">
+<div
+  class="sticky left-0 top-0 z-20 w-screen border-b border-b-yellow-800 bg-yellow-950 px-4 py-2 text-center text-sm text-yellow-50"
+>
+  <b>GAME PREVIEW</b> &mdash; nothing works yet
+</div>
+
+<div
+  class="flex h-full w-full divide-x-2 divide-zinc-600 overflow-auto text-white"
+>
   <!-- Left column-->
   <div class="flex min-w-96 flex-col divide-y-2 divide-zinc-600">
     <div class="px-4 py-2">
@@ -84,6 +92,10 @@
 <style>
   :global(body),
   :global(html) {
-    height: 100%;
+    height: 100vh;
+    position: absolute;
+  }
+  :global(body) {
+    overflow-y: hidden;
   }
 </style>

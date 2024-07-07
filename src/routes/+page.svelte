@@ -116,10 +116,6 @@
   };
 </script>
 
-<svelte:head>
-  <title>Photon Farmers</title>
-</svelte:head>
-
 <div class="flex h-full w-full text-white">
   <div
     class="z-10 flex h-full w-full flex-col items-center justify-between px-6 text-center"

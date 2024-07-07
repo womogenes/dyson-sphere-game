@@ -15,7 +15,7 @@ export const getStarfield = ({ numStars = 500 }) => {
 
     return {
       pos: new THREE.Vector3(x, y, z),
-      hue: 0.6,
+      hue: Math.random(),
       minDist: radius,
     };
   }
@@ -35,8 +35,8 @@ export const getStarfield = ({ numStars = 500 }) => {
   geo.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3));
   geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
   const mat = new THREE.PointsMaterial({
-    color: 0xaaaaaa,
-    size: 10,
+    color: 0x888888,
+    size: 8,
     vertexColors: true,
   });
   const points = new THREE.Points(geo, mat);

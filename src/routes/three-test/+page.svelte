@@ -3,7 +3,7 @@
   import { createScene } from './scene.js';
 
   let el;
-  let deleteScene;
+  let deleteScene = () => {};
 
   onMount(() => (deleteScene = createScene(el)));
   onDestroy(() => deleteScene());

@@ -12,18 +12,12 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { BLOOM_SCENE } from './constants.js';
 import { setupScene } from './setupScene.js';
 
-export const createScene = (canvas) => {
+export const createScene = (canvas, stats) => {
   let animationFrameId = null;
+  let isWindowFocused = true;
 
   const bloomLayer = new THREE.Layers();
   bloomLayer.set(BLOOM_SCENE);
-
-  const params = {
-    threshold: 0,
-    strength: 1,
-    radius: 0.5,
-    exposure: 1,
-  };
 
   const darkMaterial = new THREE.MeshBasicMaterial({ color: 'black' });
   const materials = {};
@@ -39,14 +33,14 @@ export const createScene = (canvas) => {
     40, // Focal length
     window.innerWidth / window.innerHeight, // Aspect ratio
     1, // Near plane
-    1e9, // Far plane
+    1e20, // Far plane
   );
   camera.position.set(-5, 0, 2);
   camera.lookAt(0, 0, 0);
 
   // Controls
   const controls = new OrbitControls(camera, renderer.domElement);
-  controls.minDistance = 2;
+  controls.minDistance = 10e3;
   controls.enableDamping = true;
   controls.rotateSpeed = 0.5;
   controls.enablePan = false;
@@ -55,13 +49,10 @@ export const createScene = (canvas) => {
 
   const bloomPass = new UnrealBloomPass(
     new THREE.Vector2(window.innerWidth, window.innerHeight),
-    1.5,
-    0.4,
-    0.85,
   );
-  bloomPass.threshold = params.threshold;
-  bloomPass.strength = params.strength;
-  bloomPass.radius = params.radius;
+  bloomPass.threshold = 0;
+  bloomPass.strength = 0.5;
+  bloomPass.radius = 1;
 
   const bloomComposer = new EffectComposer(renderer);
   bloomComposer.renderToScreen = false;
@@ -119,8 +110,15 @@ export const createScene = (canvas) => {
     }
   };
 
+  window.onfocus = () => (isWindowFocused = true);
+  window.onblur = () => (isWindowFocused = false);
+
   const render = () => {
+    animationFrameId = requestAnimationFrame(render);
+
     if (!scene) return;
+    if (!isWindowFocused) return;
+    stats.begin();
 
     scene.traverse(darkenNonBloomed);
     bloomComposer.render();
@@ -133,7 +131,7 @@ export const createScene = (canvas) => {
     controls.update();
     planetMesh.rotation.y += 0.002;
 
-    animationFrameId = requestAnimationFrame(render);
+    stats.end();
   };
 
   function darkenNonBloomed(obj) {

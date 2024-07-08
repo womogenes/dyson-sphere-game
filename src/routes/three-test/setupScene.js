@@ -6,7 +6,7 @@ let planetMesh;
 
 export const setupScene = (scene) => {
   // Planet
-  const planetGeometry = new THREE.IcosahedronGeometry(1, 16);
+  const planetGeometry = new THREE.IcosahedronGeometry(2.4e3, 16);
   const loader = new THREE.TextureLoader();
   const planetMaterial = new THREE.MeshPhongMaterial({
     map: loader.load('textures/mercury_16k.jpg'),
@@ -15,11 +15,11 @@ export const setupScene = (scene) => {
   scene.add(planetMesh);
 
   // Star
-  const starRadius = 100;
-  const starPosition = 5000;
+  const starRadius = 6.96e5;
+  const starPosition = 6.2e7;
   const starGeometry = new THREE.SphereGeometry(starRadius, 64, 64);
   const starMaterial = new THREE.MeshStandardMaterial({
-    emissive: 0xfffff0,
+    emissive: 0xfffff8,
     emissiveIntensity: 0.5,
   });
   const starMesh = new THREE.Mesh(starGeometry, starMaterial);

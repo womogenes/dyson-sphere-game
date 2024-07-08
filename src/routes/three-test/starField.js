@@ -4,7 +4,7 @@ import * as THREE from 'three';
 
 export const getStarfield = ({ numStars = 500 }) => {
   function randomSpherePoint() {
-    const radius = Math.random() * 100 + 2000;
+    const radius = Math.random() * 100 + 1e9;
     const u = Math.random();
     const v = Math.random();
     const theta = 2 * Math.PI * u;
@@ -36,7 +36,7 @@ export const getStarfield = ({ numStars = 500 }) => {
   geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
   const mat = new THREE.PointsMaterial({
     color: 0x888888,
-    size: 8,
+    size: 5e6,
     vertexColors: true,
   });
   const points = new THREE.Points(geo, mat);

@@ -11,6 +11,9 @@ importers:
       p5-svelte:
         specifier: ^3.1.2
         version: 3.1.2(@types/p5@1.7.6)(p5@1.9.4)
+      stats.js:
+        specifier: ^0.17.0
+        version: 0.17.0
     devDependencies:
       '@sveltejs/adapter-auto':
         specifier: ^3.0.0
@@ -1402,6 +1405,9 @@ packages:
   stacktracey@2.1.8:
     resolution: {integrity: sha512-Kpij9riA+UNg7TnphqjH7/CzctQ/owJGNbFkfEeve4Z4uxT5+JapVLFXcsurIfN34gnTWZNJ/f7NMG0E8JDzTw==}
 
+  stats.js@0.17.0:
+    resolution: {integrity: sha512-hNKz8phvYLPEcRkeG1rsGmV5ChMjKDAWU7/OJJdDErPBNChQXxCo3WZurGpnWc6gZhAzEPFad1aVgyOANH1sMw==}
+
   stoppable@1.1.0:
     resolution: {integrity: sha512-KXDYZ9dszj6bzvnEMRYvxgeTHU74QBFL54XKtP3nyMuJ81CFYtABZ3bAzL2EdFUaEwJOBOgENyFj3R7oTzDyyw==}
     engines: {node: '>=4', npm: '>=6'}
@@ -2708,6 +2714,8 @@ snapshots:
     dependencies:
       as-table: 1.0.55
       get-source: 2.0.12
+
+  stats.js@0.17.0: {}
 
   stoppable@1.1.0: {}
 

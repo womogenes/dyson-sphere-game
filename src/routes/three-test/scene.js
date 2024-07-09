@@ -29,6 +29,7 @@ export const createScene = (canvas, stats) => {
   renderer.toneMapping = THREE.ReinhardToneMapping;
 
   let scene = new THREE.Scene();
+  const { planetMesh, planetRad } = setupScene({ scene });
 
   const camera = new THREE.PerspectiveCamera(
     40, // Focal length
@@ -36,22 +37,20 @@ export const createScene = (canvas, stats) => {
     1, // Near plane
     1e20, // Far plane
   );
-  camera.position.set(-5, 0, 2);
+  camera.position.set(-planetRad * 9, 0, planetRad * 0.5);
   camera.lookAt(0, 0, 0);
 
   // Controls
-  const planetRad = 2.4e3;
-
   const controls = new TrackballControls(camera, renderer.domElement);
-  controls.minDistance = planetRad * 1.1;
+  controls.minDistance = planetRad * 1.001;
   controls.enableDamping = true;
-  controls.rotateSpeed = 0.5;
+  controls.rotateSpeed = 1;
   controls.zoomSpeed = 0.5;
   controls.enablePan = false;
   controls.addEventListener('changezoom', () => {
-    console.log(controls.getDistance(), controls._eye, planetRad);
-    controls.rotateSpeed =
-      -((controls.getDistance() - planetRad) / planetRad) * 0.13;
+    const zoom = controls.getDistance() / planetRad - 1;
+    controls.rotateSpeed = Math.min(zoom * 0.5, 1);
+    controls.zoomSpeed = Math.min(zoom * 0.5, 0.5);
   });
 
   const renderScene = new RenderPass(scene, camera);
@@ -124,21 +123,17 @@ export const createScene = (canvas, stats) => {
 
   const render = () => {
     animationFrameId = requestAnimationFrame(render);
-
     if (!scene) return;
     if (!isWindowFocused) return;
+
     stats.begin();
 
     scene.traverse(darkenNonBloomed);
     bloomComposer.render();
     scene.traverse(restoreMaterial);
-
-    // render the entire scene, then render bloom scene on top
     finalComposer.render();
 
-    // Updates, animations, etc.
     controls.update();
-    // planetMesh.rotation.y += 0.002;
 
     stats.end();
   };
@@ -158,8 +153,6 @@ export const createScene = (canvas, stats) => {
   }
 
   scene.traverse(disposeMaterial);
-  scene.children.length = 0;
-  const { planetMesh } = setupScene({ scene, planetRad });
   render();
 
   return () => {

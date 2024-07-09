@@ -294,7 +294,7 @@ class TrackballControls extends EventDispatcher {
           _zoomStart.copy(_zoomEnd);
         }
 
-        if (_eye.lengthSq() < scope.minDistance * scope.minDistance) {
+        if (_eye.lengthSq() <= scope.minDistance * scope.minDistance) {
           scope.object.position.addVectors(
             scope.target,
             _eye.setLength(scope.minDistance),
@@ -305,7 +305,7 @@ class TrackballControls extends EventDispatcher {
     };
 
     this.getDistance = function () {
-      return lastPosition.distanceTo(scope.object.position);
+      return _eye.length();
     };
 
     this.update = function () {

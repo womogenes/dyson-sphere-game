@@ -4,7 +4,10 @@ import { getStarfield } from './starField.js';
 
 let planetMesh;
 
-export const setupScene = ({ scene, planetRad }) => {
+export const setupScene = ({ scene }) => {
+  // CONSTANTS
+  const planetRad = 2.4e3;
+
   // Planet
   const planetGeometry = new THREE.IcosahedronGeometry(planetRad, 16);
   const loader = new THREE.TextureLoader();
@@ -40,5 +43,5 @@ export const setupScene = ({ scene, planetRad }) => {
 
   scene.add(light2, light3);
 
-  return { planetMesh };
+  return { planetMesh, planetRad };
 };

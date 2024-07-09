@@ -12,7 +12,7 @@ export const setupScene = ({ scene }) => {
   const planetGeometry = new THREE.IcosahedronGeometry(planetRad, 16);
   const loader = new THREE.TextureLoader();
   const planetMaterial = new THREE.MeshPhongMaterial({
-    map: loader.load('textures/8081_earthmap10k.jpg'),
+    map: loader.load('textures/mercury_16k.jpg'),
   });
   planetMesh = new THREE.Mesh(planetGeometry, planetMaterial);
   scene.add(planetMesh);

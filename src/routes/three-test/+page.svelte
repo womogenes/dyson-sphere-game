@@ -23,7 +23,5 @@
 <style>
   :global(div.stats-js) {
     position: absolute !important;
-    right: 0;
-    left: auto !important;
   }
 </style>

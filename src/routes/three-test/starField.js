@@ -4,7 +4,7 @@ import * as THREE from 'three';
 
 export const getStarfield = ({ numStars = 500 }) => {
   function randomSpherePoint() {
-    const radius = Math.random() * 100 + 1e9;
+    const radius = Math.random() * 5e8 + 1e9;
     const u = Math.random();
     const v = Math.random();
     const theta = 2 * Math.PI * u;

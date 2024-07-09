@@ -2,7 +2,8 @@ import * as THREE from 'three';
 
 // Selective bloom from https://threejs.org/examples/webgl_postprocessing_unreal_bloom_selective
 
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { OrbitControls } from '$lib/three/OrbitControls.js';
+import { TrackballControls } from '$lib/three/TrackballControls.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
@@ -39,11 +40,19 @@ export const createScene = (canvas, stats) => {
   camera.lookAt(0, 0, 0);
 
   // Controls
-  const controls = new OrbitControls(camera, renderer.domElement);
-  controls.minDistance = 10e3;
+  const planetRad = 2.4e3;
+
+  const controls = new TrackballControls(camera, renderer.domElement);
+  controls.minDistance = planetRad * 1.1;
   controls.enableDamping = true;
   controls.rotateSpeed = 0.5;
+  controls.zoomSpeed = 0.5;
   controls.enablePan = false;
+  controls.addEventListener('changezoom', () => {
+    console.log(controls.getDistance(), controls._eye, planetRad);
+    controls.rotateSpeed =
+      -((controls.getDistance() - planetRad) / planetRad) * 0.13;
+  });
 
   const renderScene = new RenderPass(scene, camera);
 
@@ -129,7 +138,7 @@ export const createScene = (canvas, stats) => {
 
     // Updates, animations, etc.
     controls.update();
-    planetMesh.rotation.y += 0.002;
+    // planetMesh.rotation.y += 0.002;
 
     stats.end();
   };
@@ -150,7 +159,7 @@ export const createScene = (canvas, stats) => {
 
   scene.traverse(disposeMaterial);
   scene.children.length = 0;
-  const { planetMesh } = setupScene(scene);
+  const { planetMesh } = setupScene({ scene, planetRad });
   render();
 
   return () => {

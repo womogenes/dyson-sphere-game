@@ -69,6 +69,7 @@ class OrbitControls extends EventDispatcher {
     // If damping is enabled, you must call controls.update() in your animation loop
     this.enableDamping = false;
     this.dampingFactor = 0.05;
+    this.zoomDampingFactor = 0.05;
 
     // This option actually enables dollying in and out; left as "zoom" for backwards compatibility.
     // Set to false to disable zooming
@@ -255,6 +256,9 @@ class OrbitControls extends EventDispatcher {
           spherical.radius = clampDistance(spherical.radius);
         } else {
           const prevRadius = spherical.radius;
+          scale =
+            (1 - this.zoomDampingFactor) * scale +
+            this.zoomDampingFactor * targetScale;
           spherical.radius = clampDistance(spherical.radius * scale);
           zoomChanged = prevRadius != spherical.radius;
         }
@@ -363,7 +367,8 @@ class OrbitControls extends EventDispatcher {
           }
         }
 
-        scale = 1;
+        // scale = 1;
+        targetScale = 1;
         performCursorZoom = false;
 
         // update condition is:
@@ -440,6 +445,7 @@ class OrbitControls extends EventDispatcher {
     const sphericalDelta = new Spherical();
 
     let scale = 1;
+    let targetScale = scale;
     const panOffset = new Vector3();
 
     const rotateStart = new Vector2();
@@ -568,7 +574,7 @@ class OrbitControls extends EventDispatcher {
         scope.object.isPerspectiveCamera ||
         scope.object.isOrthographicCamera
       ) {
-        scale /= dollyScale;
+        targetScale /= dollyScale;
       } else {
         console.warn(
           'WARNING: OrbitControls.js encountered an unknown camera type - dolly/zoom disabled.',
@@ -582,7 +588,7 @@ class OrbitControls extends EventDispatcher {
         scope.object.isPerspectiveCamera ||
         scope.object.isOrthographicCamera
       ) {
-        scale *= dollyScale;
+        targetScale *= dollyScale;
       } else {
         console.warn(
           'WARNING: OrbitControls.js encountered an unknown camera type - dolly/zoom disabled.',

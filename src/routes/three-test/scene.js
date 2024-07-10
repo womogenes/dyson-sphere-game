@@ -45,6 +45,7 @@ export const createScene = (canvas, stats) => {
   controls.dynamicDampingFactor = 0.2;
   controls.minDistance = planetRad * 1.1;
   controls.enableDamping = true;
+  controls.zoomDampingFactor = 0.1;
   controls.rotateSpeed = 1;
   controls.zoomSpeed = 0.5;
   controls.enablePan = false;

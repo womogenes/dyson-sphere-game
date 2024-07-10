@@ -4,6 +4,14 @@ import { getStarfield } from './starField.js';
 
 let planetMesh;
 
+class Planet {
+  constructor({ radius }) {
+    this.radius = radius;
+  }
+
+  update(dt) {}
+}
+
 export const setupScene = ({ scene }) => {
   // CONSTANTS
   const planetRad = 1e4;

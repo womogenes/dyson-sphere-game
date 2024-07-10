@@ -29,7 +29,7 @@ export const createScene = (canvas, stats) => {
   renderer.toneMapping = THREE.ReinhardToneMapping;
 
   let scene = new THREE.Scene();
-  const { planetMesh, planetRad } = setupScene({ scene });
+  const { planetRad, updateScene } = setupScene({ scene });
 
   const camera = new THREE.PerspectiveCamera(
     40, // Focal length
@@ -42,11 +42,11 @@ export const createScene = (canvas, stats) => {
 
   // Controls
   const controls = new TrackballControls(camera, renderer.domElement);
-  controls.minDistance = planetRad * 1.001;
+  controls.minDistance = planetRad * 1.1;
   controls.enableDamping = true;
   controls.rotateSpeed = 1;
   controls.zoomSpeed = 0.5;
-  controls.enablePan = false;
+  controls.noPan = true;
   controls.addEventListener('changezoom', () => {
     const zoom = controls.getDistance() / planetRad - 1;
     controls.rotateSpeed = Math.min(zoom * 0.5, 1);
@@ -134,6 +134,9 @@ export const createScene = (canvas, stats) => {
     finalComposer.render();
 
     controls.update();
+
+    // Update scene
+    updateScene();
 
     stats.end();
   };

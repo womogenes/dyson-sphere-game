@@ -6,7 +6,7 @@ let planetMesh;
 
 export const setupScene = ({ scene }) => {
   // CONSTANTS
-  const planetRad = 2.4e3;
+  const planetRad = 1e4;
 
   // Planet
   const planetGeometry = new THREE.IcosahedronGeometry(planetRad, 16);
@@ -18,9 +18,9 @@ export const setupScene = ({ scene }) => {
   scene.add(planetMesh);
 
   // Star
-  const starRadius = 6.96e5;
-  const starPosition = 6.2e6;
-  const starGeometry = new THREE.SphereGeometry(starRadius, 64, 64);
+  const starRadius = 7e4;
+  const starPosition = 1e6;
+  const starGeometry = new THREE.IcosahedronGeometry(starRadius, 20);
   const starMaterial = new THREE.MeshStandardMaterial({
     emissive: 0xfffff8,
     emissiveIntensity: 0.5,
@@ -43,5 +43,10 @@ export const setupScene = ({ scene }) => {
 
   scene.add(light2, light3);
 
-  return { planetMesh, planetRad };
+  // Update function
+  const updateScene = () => {
+    //
+  };
+
+  return { planetMesh, planetRad, updateScene };
 };

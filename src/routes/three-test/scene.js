@@ -28,17 +28,16 @@ export const createScene = (canvas, stats) => {
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.toneMapping = THREE.ReinhardToneMapping;
 
-  let scene = new THREE.Scene();
-  const { planetRad, updateScene } = setupScene({ scene });
-
   const camera = new THREE.PerspectiveCamera(
     40, // Focal length
     window.innerWidth / window.innerHeight, // Aspect ratio
     1, // Near plane
     1e20, // Far plane
   );
-  camera.position.set(-planetRad * 9, 0, planetRad * 0.5);
-  camera.lookAt(0, 0, 0);
+
+  const clock = new THREE.Clock();
+  let scene = new THREE.Scene();
+  const { planetRad, updateScene } = setupScene({ scene, camera, clock });
 
   // Controls
   const controls = new OrbitControls(camera, renderer.domElement);
@@ -53,7 +52,6 @@ export const createScene = (canvas, stats) => {
     const zoom = controls.getDistance() / planetRad - 1;
     controls.rotateSpeed = Math.min(zoom * 0.13, 1);
     controls.zoomSpeed = Math.min(zoom * 200, 3);
-    console.log(controls.zoomSpeed);
   });
 
   const renderScene = new RenderPass(scene, camera);
@@ -139,7 +137,7 @@ export const createScene = (canvas, stats) => {
     controls.update();
 
     // Update scene
-    updateScene();
+    updateScene(clock.getDelta());
 
     stats.end();
   };

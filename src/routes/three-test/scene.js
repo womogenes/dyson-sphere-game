@@ -41,16 +41,18 @@ export const createScene = (canvas, stats) => {
   camera.lookAt(0, 0, 0);
 
   // Controls
-  const controls = new TrackballControls(camera, renderer.domElement);
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.dynamicDampingFactor = 0.2;
   controls.minDistance = planetRad * 1.1;
   controls.enableDamping = true;
   controls.rotateSpeed = 1;
   controls.zoomSpeed = 0.5;
-  controls.noPan = true;
+  controls.enablePan = false;
   controls.addEventListener('changezoom', () => {
     const zoom = controls.getDistance() / planetRad - 1;
-    controls.rotateSpeed = Math.min(zoom * 0.5, 1);
-    controls.zoomSpeed = Math.min(zoom * 0.5, 0.5);
+    controls.rotateSpeed = Math.min(zoom * 0.13, 1);
+    controls.zoomSpeed = Math.min(zoom * 200, 3);
+    console.log(controls.zoomSpeed);
   });
 
   const renderScene = new RenderPass(scene, camera);

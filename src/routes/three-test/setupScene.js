@@ -45,7 +45,7 @@ export const setupScene = ({ scene }) => {
 
   // Update function
   const updateScene = () => {
-    //
+    planetMesh.rotation.y += 0.002;
   };
 
   return { planetMesh, planetRad, updateScene };

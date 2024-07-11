@@ -13,9 +13,10 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { BLOOM_SCENE } from './constants.js';
 import { setupScene } from './setupScene.js';
 
-export const createScene = (canvas, stats) => {
+export const createScene = (canvas, stats, graphicsContainerEl) => {
   let animationFrameId = null;
   let isWindowFocused = true;
+  const parentEl = canvas.parentElement;
 
   const bloomLayer = new THREE.Layers();
   bloomLayer.set(BLOOM_SCENE);
@@ -25,12 +26,12 @@ export const createScene = (canvas, stats) => {
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvas });
   renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setSize(parentEl.clientWidth, parentEl.clientHeight);
   renderer.toneMapping = THREE.ReinhardToneMapping;
 
   const camera = new THREE.PerspectiveCamera(
     40, // Focal length
-    window.innerWidth / window.innerHeight, // Aspect ratio
+    parentEl.clientWidth / parentEl.clientHeight, // Aspect ratio
     1, // Near plane
     1e20, // Far plane
   );
@@ -40,7 +41,7 @@ export const createScene = (canvas, stats) => {
   const { planetRad, updateScene } = setupScene({ scene, camera, clock });
 
   // Controls
-  const controls = new OrbitControls(camera, renderer.domElement);
+  const controls = new OrbitControls(camera, graphicsContainerEl);
   controls.dynamicDampingFactor = 0.2;
   controls.minDistance = planetRad * 1.1;
   controls.enableDamping = true;
@@ -57,7 +58,7 @@ export const createScene = (canvas, stats) => {
   const renderScene = new RenderPass(scene, camera);
 
   const bloomPass = new UnrealBloomPass(
-    new THREE.Vector2(window.innerWidth, window.innerHeight),
+    new THREE.Vector2(parentEl.clientWidth, parentEl.clientHeight),
   );
   bloomPass.threshold = 0;
   bloomPass.strength = 0.5;
@@ -101,8 +102,8 @@ export const createScene = (canvas, stats) => {
   finalComposer.addPass(outputPass);
 
   window.onresize = function () {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+    const width = parentEl.clientWidth;
+    const height = parentEl.clientHeight;
 
     camera.aspect = width / height;
     camera.updateProjectionMatrix();

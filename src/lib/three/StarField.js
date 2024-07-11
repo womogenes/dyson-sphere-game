@@ -39,6 +39,7 @@ export const getStarfield = ({ numStars = 500 }) => {
     size: 8e6,
     vertexColors: true,
     depthTest: true,
+    blending: THREE.AdditiveBlending,
   });
   const points = new THREE.Points(geo, mat);
   return points;

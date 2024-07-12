@@ -1,5 +1,10 @@
 import * as THREE from 'three';
-import { BLOOM_SCENE } from './constants.js';
+import {
+  BLOOM_SCENE,
+  PLANET_RAD,
+  PLANET_ORBIT_RAD,
+  STAR_RAD,
+} from './constants.js';
 import { getStarfield } from '$lib/three/StarField.js';
 import { LodCircleGeometry } from '$lib/three/LoDCircleGeometry.js';
 import { game } from '$lib/game.js';
@@ -16,7 +21,7 @@ class Planet {
     this.theta = 0;
     this.pos = new THREE.Vector3();
     this.vel = new THREE.Vector3();
-    this.orbitalPeriod = 1e10; // seconds
+    this.orbitalPeriod = 60 * 60 * 0.5; // seconds
     this.orbitalRadius = orbitalRadius;
     this.rotation = { x: 0, y: 0, z: 0 };
   }
@@ -24,13 +29,21 @@ class Planet {
   update(dt) {
     this.rotation.y = (t * Math.PI * 2) / 60;
     this.theta = -(t * 2 * Math.PI) / this.orbitalPeriod + Math.PI;
+
     this.pos.x = Math.cos(this.theta) * this.orbitalRadius;
     this.pos.z = Math.sin(this.theta) * this.orbitalRadius;
+
+    // Calculus (blegh)
+    let dTheta = (-2 * Math.PI) / this.orbitalPeriod;
+    this.vel.set(
+      -Math.sin(this.theta) * dTheta * this.orbitalRadius,
+      0,
+      Math.cos(this.theta) * dTheta * this.orbitalRadius,
+    );
   }
 }
 
 class Satellite {
-  static geometry = new THREE.ConeGeometry(100, 200, 8, 1, false);
   static material = new THREE.MeshPhongMaterial({
     emissive: true,
     color: 0xffffff,
@@ -44,30 +57,49 @@ class Satellite {
     this.mesh.layers.enable(BLOOM_SCENE);
   }
 
+  static getAcceleration(pos, vel) {
+    // Compute acceleration given position and velocity
+    return new THREE.Vector3();
+  }
+
   update(dt) {
     // Get attracted to center
+
+    // Velocity Verlet: https://en.wikipedia.org/wiki/Verlet_integration#Velocity_Verlet
+    let acc = Satellite.getAcceleration(this.pos, this.vel);
+    let newPos = this.pos
+      .clone()
+      .addScaledVector(this.vel, dt)
+      .addScaledVector(acc, (dt * dt) / 2);
+    let newAcc = Satellite.getAcceleration(newPos, this.vel);
+    let newVel = this.vel.clone().addScaledVector(acc.add(newAcc), dt / 2);
+
+    this.pos.copy(newPos);
+    this.vel.copy(newVel);
+    this.mesh.lookAt(this.mesh.position.clone().add(this.vel));
   }
 }
+Satellite.geometry = new THREE.ConeGeometry(200, 400, 8, 1, false);
+Satellite.geometry.rotateX(Math.PI / 2); // Orient point for mesh.lookAt
 
 export const setupScene = ({ scene, camera, clock }) => {
-  // CONSTANTS
-  const planetRad = 1e4;
-  const planetOrbitRad = 1e8;
-  const starRadius = 7e6;
-
   // Planet
-  const planet = new Planet({ planetRad, orbitalRadius: planetOrbitRad });
-  const planetGeometry = new THREE.IcosahedronGeometry(planetRad, 16);
+  const planet = new Planet({
+    radius: PLANET_RAD,
+    orbitalRadius: PLANET_ORBIT_RAD,
+  });
+  const planetGeometry = new THREE.IcosahedronGeometry(PLANET_RAD, 16);
   const loader = new THREE.TextureLoader();
   const planetMaterial = new THREE.MeshPhongMaterial({
     map: loader.load('textures/mercury_16k.jpg'),
   });
   const planetMesh = new THREE.Mesh(planetGeometry, planetMaterial);
   scene.add(planetMesh);
+  Satellite.planet = planet;
 
   // Planet orbit
   const orbitGeometry = LodCircleGeometry(
-    planetOrbitRad,
+    PLANET_ORBIT_RAD,
     Math.PI * 0.5,
     128,
     32,
@@ -80,7 +112,7 @@ export const setupScene = ({ scene, camera, clock }) => {
   // scene.add(orbitMesh);
 
   // Star
-  const starGeometry = new THREE.IcosahedronGeometry(starRadius, 12);
+  const starGeometry = new THREE.IcosahedronGeometry(STAR_RAD, 12);
   const starMaterial = new THREE.MeshStandardMaterial({
     emissive: 0xfffaf8,
     emissiveIntensity: 0.5,
@@ -105,7 +137,7 @@ export const setupScene = ({ scene, camera, clock }) => {
   scene.add(light2, light3);
 
   // Cameras
-  camera.position.set(-planetRad * 9, planetRad * 2, planetRad * 2);
+  camera.position.set(-PLANET_RAD * 9, PLANET_RAD * 2, PLANET_RAD * 2);
   camera.lookAt(0, 0, 0);
 
   // Update function
@@ -113,18 +145,23 @@ export const setupScene = ({ scene, camera, clock }) => {
     t = clock.getElapsedTime();
     frameCount++;
 
+    // Update planet
+    planet.update(dt);
+    planetMesh.rotation.y = planet.rotation.y;
+    orbitMesh.rotation.y = -planet.theta;
+
     // Update swarm
-    if (frameCount % 30 === 1 && swarm.length < 1000) {
-      let phi = Math.random() * Math.PI;
+    if (frameCount % 2 === 1 && swarm.length < 500) {
+      let phi = (Math.random() - 0.5) * 3.14 + Math.PI / 2;
       let theta = Math.random() * 2 * Math.PI;
       let planetLocalCoords = new THREE.Vector3(
-        (planetRad + 10) * Math.sin(phi) * Math.cos(theta),
-        (planetRad + 10) * Math.cos(phi),
-        (planetRad + 10) * Math.sin(phi) * Math.sin(theta),
+        PLANET_RAD * 1.5 * Math.sin(phi) * Math.cos(theta),
+        PLANET_RAD * 1.5 * Math.cos(phi),
+        PLANET_RAD * 1.5 * Math.sin(phi) * Math.sin(theta),
       );
       const sat = new Satellite({
-        pos: planetLocalCoords.clone().add(planet.pos),
-        vel: new THREE.Vector3(),
+        pos: planet.pos.clone().add(planetLocalCoords),
+        vel: planet.vel.clone(),
       });
       sat.mesh.position.copy(planetLocalCoords);
 
@@ -132,11 +169,12 @@ export const setupScene = ({ scene, camera, clock }) => {
       scene.add(sat.mesh);
       stores.numSatellites.update((x) => ++x);
     }
+    swarm.forEach((sat) => sat.update(dt));
 
-    // Update planet
-    planet.update(dt);
-    planetMesh.rotation.y = planet.rotation.y;
-    orbitMesh.rotation.y = -planet.theta;
+    // Move swarm meshes
+    for (let sat of swarm) {
+      sat.mesh.position.copy(sat.pos.clone().sub(planet.pos));
+    }
 
     // Move star mesh relative to planet
     starMesh.position.set(-planet.pos.x, -planet.pos.y, -planet.pos.z);
@@ -152,5 +190,5 @@ export const setupScene = ({ scene, camera, clock }) => {
     );
   };
 
-  return { planetRad, updateScene };
+  return { updateScene };
 };

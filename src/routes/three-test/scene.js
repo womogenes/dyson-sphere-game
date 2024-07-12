@@ -10,7 +10,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 
-import { BLOOM_SCENE } from './constants.js';
+import { BLOOM_SCENE, PLANET_RAD } from './constants.js';
 import { setupScene } from './setupScene.js';
 
 export const createScene = (canvas, stats, graphicsContainerEl) => {
@@ -38,19 +38,19 @@ export const createScene = (canvas, stats, graphicsContainerEl) => {
 
   const clock = new THREE.Clock();
   let scene = new THREE.Scene();
-  const { planetRad, updateScene } = setupScene({ scene, camera, clock });
+  const { updateScene } = setupScene({ scene, camera, clock });
 
   // Controls
   const controls = new OrbitControls(camera, graphicsContainerEl);
   controls.dynamicDampingFactor = 0.2;
-  controls.minDistance = planetRad * 1.1;
+  controls.minDistance = PLANET_RAD * 1.1;
   controls.enableDamping = true;
   controls.zoomDampingFactor = 0.1;
   controls.rotateSpeed = 1;
   controls.zoomSpeed = 0.5;
   controls.enablePan = false;
   controls.addEventListener('changezoom', () => {
-    const zoom = controls.getDistance() / planetRad - 1;
+    const zoom = controls.getDistance() / PLANET_RAD - 1;
     controls.rotateSpeed = Math.min(zoom * 0.13, 1);
     controls.zoomSpeed = Math.min(zoom * 200, 3);
   });

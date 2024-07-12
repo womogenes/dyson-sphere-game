@@ -4,6 +4,9 @@ import {
   PLANET_RAD,
   PLANET_ORBIT_RAD,
   STAR_RAD,
+  G,
+  PLANET_MASS,
+  STAR_MASS,
 } from './constants.js';
 import { getStarfield } from '$lib/three/StarField.js';
 import { LodCircleGeometry } from '$lib/three/LoDCircleGeometry.js';
@@ -16,7 +19,7 @@ let t = 0;
 let frameCount = 0;
 
 class Planet {
-  constructor({ radius, orbitalRadius }) {
+  constructor({ radius, orbitalRadius, mass }) {
     this.radius = radius;
     this.theta = 0;
     this.pos = new THREE.Vector3();
@@ -24,6 +27,7 @@ class Planet {
     this.orbitalPeriod = 60 * 60 * 0.1; // seconds
     this.orbitalRadius = orbitalRadius;
     this.rotation = { x: 0, y: 0, z: 0 };
+    this.mass = mass;
   }
 
   update(dt) {
@@ -49,22 +53,23 @@ class Satellite {
     color: 0xffffff,
   });
 
-  constructor({ pos, vel }) {
+  constructor({ pos, vel, planet }) {
     this.pos = pos; // x, y, and z components
     this.vel = vel;
+    this.planet = planet;
 
     this.mesh = new THREE.Mesh(Satellite.geometry, Satellite.material);
     this.mesh.layers.enable(BLOOM_SCENE);
   }
 
-  static getAcceleration(pos, vel) {
+  getAcceleration(pos, vel) {
     // Compute acceleration given position and velocity
-    return new THREE.Vector3();
+    const R = this.pos.clone().sub(this.planet.pos);
+    const r = R.length();
+    return R.multiplyScalar((G * this.planet.mass) / (r * r));
   }
 
   update(dt) {
-    // Get attracted to center
-
     // Velocity Verlet: https://en.wikipedia.org/wiki/Verlet_integration#Velocity_Verlet
     let acc = Satellite.getAcceleration(this.pos, this.vel);
     let newPos = this.pos
@@ -82,7 +87,7 @@ class Satellite {
 Satellite.geometry = new THREE.ConeGeometry(200, 400, 8, 1, false);
 Satellite.geometry.rotateX(Math.PI / 2); // Orient point for mesh.lookAt
 
-export const setupScene = ({ scene, camera, clock }) => {
+export const setupScene = ({ scene, camera }) => {
   // Planet
   const planet = new Planet({
     radius: PLANET_RAD,
@@ -162,6 +167,7 @@ export const setupScene = ({ scene, camera, clock }) => {
       const sat = new Satellite({
         pos: planet.pos.clone().add(planetLocalCoords),
         vel: planet.vel.clone(),
+        planet: planet,
       });
       sat.mesh.position.copy(planetLocalCoords);
 

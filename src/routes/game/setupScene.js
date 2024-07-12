@@ -21,7 +21,7 @@ class Planet {
     this.theta = 0;
     this.pos = new THREE.Vector3();
     this.vel = new THREE.Vector3();
-    this.orbitalPeriod = 60 * 60 * 0.5; // seconds
+    this.orbitalPeriod = 60 * 60 * 0.1; // seconds
     this.orbitalRadius = orbitalRadius;
     this.rotation = { x: 0, y: 0, z: 0 };
   }
@@ -109,7 +109,7 @@ export const setupScene = ({ scene, camera, clock }) => {
     linewidth: 10,
   });
   const orbitMesh = new THREE.LineLoop(orbitGeometry, orbitMaterial);
-  // scene.add(orbitMesh);
+  scene.add(orbitMesh);
 
   // Star
   const starGeometry = new THREE.IcosahedronGeometry(STAR_RAD, 12);
@@ -142,7 +142,7 @@ export const setupScene = ({ scene, camera, clock }) => {
 
   // Update function
   const updateScene = (dt) => {
-    t = clock.getElapsedTime();
+    t += dt;
     frameCount++;
 
     // Update planet

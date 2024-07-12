@@ -12,8 +12,15 @@ class Game {
   }
 
   // Game tick
-  tick() {
-    //
+  tick(dt) {
+    this.stores.power.set(this.stores.numSatellites.value);
+    this.stores.storedEnergy.set(
+      Math.min(
+        this.stores.maxStoredEnergy.value,
+        this.stores.storedEnergy.value +
+          (this.stores.power.value * dt) / 1000 / 60 / 60,
+      ),
+    );
   }
 }
 

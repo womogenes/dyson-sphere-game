@@ -3,11 +3,19 @@
   import { createScene } from './scene.js';
   import Stats from 'stats.js';
 
-  let stats = new Stats();
+  import { game } from '$lib/game.js';
+  let stores = {};
+  let storeSubscriptions = [];
+  Object.keys(game.stores).forEach((key) => {
+    const unsubscribe = game.stores[key].subscribe((value) => {
+      stores[key] = value;
+    });
+    storeSubscriptions.push(unsubscribe);
+  });
 
+  let stats = new Stats();
   let canvasEl, graphicsContainerEl;
   let deleteScene = () => {};
-
   onMount(() => {
     deleteScene = createScene(canvasEl, stats, graphicsContainerEl);
     stats.showPanel(0);
@@ -16,6 +24,7 @@
   });
   onDestroy(() => {
     deleteScene();
+    storeSubscriptions.forEach((unsub) => unsub());
     stats = null;
   });
 </script>
@@ -64,7 +73,8 @@
 
     <!-- Controls -->
     <div class="h-full p-4">
-      <h1>Production</h1>
+      <h1 class="font-bold">Swarm</h1>
+      <p>Satellites: {stores.numSatellites}</p>
     </div>
   </div>
 

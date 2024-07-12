@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import { BLOOM_SCENE } from './constants.js';
 import { getStarfield } from '$lib/three/StarField.js';
 import { LodCircleGeometry } from '$lib/three/LoDCircleGeometry.js';
+import { game } from '$lib/game.js';
+
+const stores = game.stores;
 
 // GLOBAL TIME for this scene
 let t = 0;
@@ -94,6 +97,7 @@ export const setupScene = ({ scene, camera, clock }) => {
 
   // Swarm
   const swarm = [];
+  stores.numSatellites.set(0);
 
   // Lights
   const light2 = new THREE.AmbientLight(0xffffff, 0.5);
@@ -110,7 +114,7 @@ export const setupScene = ({ scene, camera, clock }) => {
     frameCount++;
 
     // Update swarm
-    if (frameCount % 30 === 1) {
+    if (frameCount % 30 === 1 && swarm.length < 1000) {
       let phi = Math.random() * Math.PI;
       let theta = Math.random() * 2 * Math.PI;
       let planetLocalCoords = new THREE.Vector3(
@@ -126,6 +130,7 @@ export const setupScene = ({ scene, camera, clock }) => {
 
       swarm.push(sat);
       scene.add(sat.mesh);
+      stores.numSatellites.update((x) => ++x);
     }
 
     // Update planet

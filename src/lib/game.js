@@ -4,7 +4,7 @@ import { stores } from './stores';
 import { upgrades } from './upgrades';
 import { events } from './events';
 
-export class Game {
+class Game {
   constructor() {
     this.stores = stores(this);
     this.upgrades = upgrades(this);
@@ -16,3 +16,7 @@ export class Game {
     //
   }
 }
+
+// TODO: load this from localStorage
+const game = new Game();
+export { game };

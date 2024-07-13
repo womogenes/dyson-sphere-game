@@ -57,7 +57,7 @@
   class="flex h-full w-full divide-x-2 divide-zinc-600 overflow-auto text-white"
 >
   <!-- Left column-->
-  <div class="flex min-w-96 flex-col divide-y-2 divide-zinc-600">
+  <div class="flex min-w-60 flex-col divide-y-2 divide-zinc-600 sm:min-w-96">
     <div class="px-4 py-2">
       <h1 class="text-xl font-black uppercase">Photon Farmers</h1>
     </div>
@@ -121,7 +121,7 @@
       <Button
         class="mt-2"
         on:click={spawnSatellite}
-        disabled={stores.storedEnergy < 1 || stores.power >= 200000}
+        disabled={stores.storedEnergy < 1 || stores.power > 199900}
         >Spawn Satellite (1 MWh)</Button
       >
     </div>
@@ -130,7 +130,7 @@
   <!-- Center column -->
   <div
     id="sketch-container"
-    class="relative h-full w-full min-w-96 overflow-hidden"
+    class="relative h-full w-full min-w-60 overflow-hidden md:min-w-96"
   >
     <!-- Tabs -->
     <div class="w-full">
@@ -154,6 +154,7 @@
 <style>
   :global(body, html) {
     height: 100%;
+    touch-action: manipulation;
   }
   :global(div.stats-js) {
     position: absolute !important;

@@ -149,6 +149,8 @@ export const setupScene = ({ scene, camera }) => {
 
   // Handler for adding new satellite
   const spawnSatellite = () => {
+    if (swarm.length > 500) return; // Don't bother rendering these
+
     // Calculate satellite's coords relative to planet
     let phi = (Math.random() - 0.5) * 0.5 + Math.PI / 2;
     let theta = Math.random() * 2 * Math.PI;

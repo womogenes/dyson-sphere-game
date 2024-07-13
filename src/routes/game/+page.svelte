@@ -57,7 +57,9 @@
   class="flex h-full w-full divide-x-2 divide-zinc-600 overflow-auto text-white"
 >
   <!-- Left column-->
-  <div class="flex min-w-60 flex-col divide-y-2 divide-zinc-600 sm:min-w-96">
+  <div
+    class="flex max-h-full min-w-60 flex-col divide-y-2 divide-zinc-600 overflow-auto sm:min-w-96"
+  >
     <div class="px-4 py-2">
       <h1 class="text-xl font-black uppercase">Photon Farmers</h1>
     </div>
@@ -144,7 +146,7 @@
     <!-- Graphics -->
     <div
       bind:this={graphicsContainerEl}
-      class="absolute left-0 top-0 z-50 h-full w-full"
+      class="absolute left-0 top-0 h-full w-full"
     >
       <canvas bind:this={canvasEl} />
     </div>
@@ -155,6 +157,8 @@
   :global(body, html) {
     height: 100%;
     touch-action: manipulation;
+    overflow: hidden;
+    overscroll-behavior: none;
   }
   :global(div.stats-js) {
     position: absolute !important;

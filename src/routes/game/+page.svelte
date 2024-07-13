@@ -33,7 +33,7 @@
     const tickLoop = () => {
       let dt = Math.min(Date.now() - lastTickTime, 1000);
       game.tick(dt);
-      tickLoopTimeoutId = setTimeout(tickLoop, 50);
+      tickLoopTimeoutId = setTimeout(tickLoop, 100);
       lastTickTime = Date.now();
     };
     tickLoop();
@@ -64,7 +64,9 @@
         <div
           class="mb-1 flex flex-wrap items-end justify-between whitespace-pre"
         >
-          <span class="text-2xl font-bold tabular-nums">{stores.power} MW</span>
+          <span class="text-2xl font-bold tabular-nums"
+            >{stores.power.toLocaleString()} MW</span
+          >
           <span class="ml-auto">/ {stores.maxPower.toLocaleString()} MW</span>
         </div>
         <div class="h-2.5 w-full overflow-hidden rounded-full bg-zinc-700">

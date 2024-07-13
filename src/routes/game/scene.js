@@ -124,7 +124,7 @@ export const createScene = (canvas, stats, graphicsContainerEl) => {
   window.onblur = () => (isWindowFocused = false);
 
   const render = () => {
-    const dt = clock.getDelta();
+    const dt = Math.min(clock.getDelta(), 0.016);
     animationFrameId = requestAnimationFrame(render);
     if (!scene) return;
     if (!isWindowFocused) return;

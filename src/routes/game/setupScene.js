@@ -24,7 +24,7 @@ class Planet {
     this.theta = 0;
     this.pos = new THREE.Vector3();
     this.vel = new THREE.Vector3();
-    this.orbitalPeriod = 60 * 60 * 0.1; // seconds
+    this.orbitalPeriod = 60 * 60 * 0.5; // seconds
     this.orbitalRadius = orbitalRadius;
     this.rotation = { x: 0, y: 0, z: 0 };
     this.mass = mass;
@@ -67,7 +67,7 @@ class Satellite {
     const R = pos.clone().sub(Satellite.planet.pos);
     const r = R.length();
 
-    return R.multiplyScalar(-(G * Satellite.planet.mass) / (r * r));
+    return R.multiplyScalar(-(G * Satellite.planet.mass) / (r * r * r));
   }
 
   update(dt) {
@@ -122,7 +122,7 @@ export const setupScene = ({ scene, camera }) => {
   const starGeometry = new THREE.IcosahedronGeometry(STAR_RAD, 12);
   const starMaterial = new THREE.MeshStandardMaterial({
     emissive: 0xfffaf8,
-    emissiveIntensity: 0.5,
+    emissiveIntensity: 1,
     depthTest: true,
   });
   const starMesh = new THREE.Mesh(starGeometry, starMaterial);
@@ -158,19 +158,19 @@ export const setupScene = ({ scene, camera }) => {
     orbitMesh.rotation.y = -planet.theta;
 
     // Update swarm
-    if (frameCount % 30 === 1 && swarm.length < 500) {
+    if (frameCount % 10 === 1 && swarm.length < 300) {
       // Calculate satellite's coords relative to planet
-      let phi = (Math.random() - 0.5) * 0.1 + Math.PI / 2;
+      let phi = (Math.random() - 0.5) * 0.5 + Math.PI / 2;
       let theta = Math.random() * 2 * Math.PI;
-      let initRadius = PLANET_RAD * 1.5;
+      let initRadius = PLANET_RAD * (Math.random() * 1 + 2);
       let planetLocalCoords = new THREE.Vector3(
         initRadius * Math.sin(phi) * Math.cos(theta),
-        initRadius * 1.5 * Math.cos(phi),
-        initRadius * 1.5 * Math.sin(phi) * Math.sin(theta),
+        initRadius * Math.cos(phi),
+        initRadius * Math.sin(phi) * Math.sin(theta),
       );
 
       // Calculate velocity needed to stay in orbit
-      let orbitSpeed = Math.sqrt(G * PLANET_MASS);
+      let orbitSpeed = Math.sqrt((G * PLANET_MASS) / initRadius);
       const sat = new Satellite({
         pos: planet.pos.clone().add(planetLocalCoords),
         vel: planet.vel
@@ -199,6 +199,7 @@ export const setupScene = ({ scene, camera }) => {
 
     // Move star mesh relative to planet
     starMesh.position.set(-planet.pos.x, -planet.pos.y, -planet.pos.z);
+    starMesh.rotation.y += dt * 0.01;
     light3.position.set(
       starMesh.position.x,
       starMesh.position.y,

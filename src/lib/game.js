@@ -13,7 +13,7 @@ class Game {
 
   // Game tick
   tick(dt) {
-    this.stores.power.set(this.stores.numSatellites.value);
+    this.stores.power.set(this.stores.numSatellites.value * 100);
     this.stores.storedEnergy.set(
       Math.min(
         this.stores.maxStoredEnergy.value,

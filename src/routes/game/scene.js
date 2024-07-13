@@ -124,6 +124,7 @@ export const createScene = (canvas, stats, graphicsContainerEl) => {
   window.onblur = () => (isWindowFocused = false);
 
   const render = () => {
+    const dt = clock.getDelta();
     animationFrameId = requestAnimationFrame(render);
     if (!scene) return;
     if (!isWindowFocused) return;
@@ -138,7 +139,7 @@ export const createScene = (canvas, stats, graphicsContainerEl) => {
     controls.update();
 
     // Update scene
-    updateScene(clock.getDelta());
+    updateScene(dt);
 
     stats.end();
   };

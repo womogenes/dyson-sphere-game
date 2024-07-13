@@ -62,11 +62,12 @@ class Satellite {
     this.mesh.layers.enable(BLOOM_SCENE);
   }
 
-  getAcceleration(pos, vel) {
+  static getAcceleration(pos, vel) {
     // Compute acceleration given position and velocity
-    const R = this.pos.clone().sub(this.planet.pos);
+    const R = pos.clone().sub(Satellite.planet.pos);
     const r = R.length();
-    return R.multiplyScalar((G * this.planet.mass) / (r * r));
+
+    return R.multiplyScalar(-(G * Satellite.planet.mass) / (r * r));
   }
 
   update(dt) {
@@ -92,6 +93,7 @@ export const setupScene = ({ scene, camera }) => {
   const planet = new Planet({
     radius: PLANET_RAD,
     orbitalRadius: PLANET_ORBIT_RAD,
+    mass: PLANET_MASS,
   });
   const planetGeometry = new THREE.IcosahedronGeometry(PLANET_RAD, 16);
   const loader = new THREE.TextureLoader();
@@ -156,17 +158,30 @@ export const setupScene = ({ scene, camera }) => {
     orbitMesh.rotation.y = -planet.theta;
 
     // Update swarm
-    if (frameCount % 2 === 1 && swarm.length < 500) {
-      let phi = (Math.random() - 0.5) * 3.14 + Math.PI / 2;
+    if (frameCount % 30 === 1 && swarm.length < 500) {
+      // Calculate satellite's coords relative to planet
+      let phi = (Math.random() - 0.5) * 0.1 + Math.PI / 2;
       let theta = Math.random() * 2 * Math.PI;
+      let initRadius = PLANET_RAD * 1.5;
       let planetLocalCoords = new THREE.Vector3(
-        PLANET_RAD * 1.5 * Math.sin(phi) * Math.cos(theta),
-        PLANET_RAD * 1.5 * Math.cos(phi),
-        PLANET_RAD * 1.5 * Math.sin(phi) * Math.sin(theta),
+        initRadius * Math.sin(phi) * Math.cos(theta),
+        initRadius * 1.5 * Math.cos(phi),
+        initRadius * 1.5 * Math.sin(phi) * Math.sin(theta),
       );
+
+      // Calculate velocity needed to stay in orbit
+      let orbitSpeed = Math.sqrt(G * PLANET_MASS);
       const sat = new Satellite({
         pos: planet.pos.clone().add(planetLocalCoords),
-        vel: planet.vel.clone(),
+        vel: planet.vel
+          .clone()
+          .add(
+            new THREE.Vector3(
+              Math.sin(theta) * orbitSpeed,
+              0,
+              -Math.cos(theta) * orbitSpeed,
+            ),
+          ),
         planet: planet,
       });
       sat.mesh.position.copy(planetLocalCoords);

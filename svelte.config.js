@@ -7,6 +7,7 @@ const config = {
     adapter: adapter(),
     alias: {
       $lib: './src/lib',
+      '@/*': './src/lib',
     },
   },
 };

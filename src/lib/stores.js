@@ -34,8 +34,8 @@ export const stores = (game) => {
   const defaultValues = {
     power: 0, // megawatts
     maxPower: 200000, // megawatts
-    storedEnergy: 0, // megawatt-hours
-    maxStoredEnergy: 50000, // megawatt-hours
+    storedEnergy: 50, // megawatt-hours
+    maxStoredEnergy: 5000, // megawatt-hours
     numSatellites: 0,
   };
 

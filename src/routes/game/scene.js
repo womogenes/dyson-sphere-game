@@ -38,7 +38,7 @@ export const createScene = (canvas, stats, graphicsContainerEl) => {
 
   const clock = new THREE.Clock();
   let scene = new THREE.Scene();
-  const { updateScene } = setupScene({ scene, camera, clock });
+  const { updateScene, spawnSatellite } = setupScene({ scene, camera, clock });
 
   // Controls
   const controls = new OrbitControls(camera, graphicsContainerEl);
@@ -161,8 +161,11 @@ export const createScene = (canvas, stats, graphicsContainerEl) => {
   scene.traverse(disposeMaterial);
   render();
 
-  return () => {
-    scene = null;
-    cancelAnimationFrame(animationFrameId);
+  return {
+    deleteScene: () => {
+      scene = null;
+      cancelAnimationFrame(animationFrameId);
+    },
+    spawnSatellite,
   };
 };

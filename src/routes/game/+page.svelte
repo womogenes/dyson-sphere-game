@@ -4,6 +4,7 @@
   import Stats from 'stats.js';
 
   import { game } from '$lib/game.js';
+  import Button from '$lib/components/ui/button/button.svelte';
   let stores = {};
   let storeSubscriptions = [];
   Object.keys(game.stores).forEach((key) => {
@@ -19,12 +20,17 @@
   let stats = new Stats();
   let canvasEl, graphicsContainerEl;
   let deleteScene = () => {};
+  let spawnSatellite = () => {};
   let tickLoopTimeoutId;
   let lastTickTime = 0;
 
   onMount(() => {
     // Set up 3D scene, stats.js
-    deleteScene = createScene(canvasEl, stats, graphicsContainerEl);
+    ({ deleteScene, spawnSatellite } = createScene(
+      canvasEl,
+      stats,
+      graphicsContainerEl,
+    ));
     stats.showPanel(0);
     graphicsContainerEl.appendChild(stats.dom);
     stats.dom.classList.toggle('stats-js');
@@ -84,7 +90,8 @@
         >
           <span class="text-2xl font-bold tabular-nums"
             >{stores.storedEnergy.toLocaleString('en-US', {
-              maximumFractionDigits: 0,
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
             })} MWh</span
           >
           <span class="ml-auto"
@@ -97,6 +104,12 @@
             style={`width: ${(stores.storedEnergy / stores.maxStoredEnergy) * 100}%`}
           ></div>
         </div>
+        <span class="tabular-nums"
+          >(+{(stores.power / 60 / 60).toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })} / s)</span
+        >
       </div>
     </div>
 
@@ -104,6 +117,13 @@
     <div class="h-full p-4">
       <h1 class="font-bold">Swarm</h1>
       <p>Satellites: {stores.numSatellites}</p>
+
+      <Button
+        class="mt-2"
+        on:click={spawnSatellite}
+        disabled={stores.storedEnergy < 1 || stores.power >= 200000}
+        >Spawn Satellite (1 MWh)</Button
+      >
     </div>
   </div>
 

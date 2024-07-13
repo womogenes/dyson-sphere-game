@@ -147,6 +147,41 @@ export const setupScene = ({ scene, camera }) => {
   camera.position.set(-PLANET_RAD * 9, PLANET_RAD * 2, PLANET_RAD * 2);
   camera.lookAt(0, 0, 0);
 
+  // Handler for adding new satellite
+  const spawnSatellite = () => {
+    // Calculate satellite's coords relative to planet
+    let phi = (Math.random() - 0.5) * 0.5 + Math.PI / 2;
+    let theta = Math.random() * 2 * Math.PI;
+    let initRadius = PLANET_RAD * (Math.random() * 1 + 2);
+    let planetLocalCoords = new THREE.Vector3(
+      initRadius * Math.sin(phi) * Math.cos(theta),
+      initRadius * Math.cos(phi),
+      initRadius * Math.sin(phi) * Math.sin(theta),
+    );
+
+    // Calculate velocity needed to stay in orbit
+    let orbitSpeed = Math.sqrt((G * PLANET_MASS) / initRadius);
+    const sat = new Satellite({
+      pos: planet.pos.clone().add(planetLocalCoords),
+      vel: planet.vel
+        .clone()
+        .add(
+          new THREE.Vector3(
+            Math.sin(theta) * orbitSpeed,
+            0,
+            -Math.cos(theta) * orbitSpeed,
+          ),
+        ),
+      planet: planet,
+    });
+    sat.mesh.position.copy(planetLocalCoords);
+
+    swarm.push(sat);
+    scene.add(sat.mesh);
+    stores.storedEnergy.update((x) => x - 1);
+    stores.numSatellites.update((x) => ++x);
+  };
+
   // Update function
   const updateScene = (dt) => {
     t += dt;
@@ -158,38 +193,6 @@ export const setupScene = ({ scene, camera }) => {
     orbitMesh.rotation.y = -planet.theta;
 
     // Update swarm
-    if (frameCount % 10 === 1 && swarm.length < 300) {
-      // Calculate satellite's coords relative to planet
-      let phi = (Math.random() - 0.5) * 0.5 + Math.PI / 2;
-      let theta = Math.random() * 2 * Math.PI;
-      let initRadius = PLANET_RAD * (Math.random() * 1 + 2);
-      let planetLocalCoords = new THREE.Vector3(
-        initRadius * Math.sin(phi) * Math.cos(theta),
-        initRadius * Math.cos(phi),
-        initRadius * Math.sin(phi) * Math.sin(theta),
-      );
-
-      // Calculate velocity needed to stay in orbit
-      let orbitSpeed = Math.sqrt((G * PLANET_MASS) / initRadius);
-      const sat = new Satellite({
-        pos: planet.pos.clone().add(planetLocalCoords),
-        vel: planet.vel
-          .clone()
-          .add(
-            new THREE.Vector3(
-              Math.sin(theta) * orbitSpeed,
-              0,
-              -Math.cos(theta) * orbitSpeed,
-            ),
-          ),
-        planet: planet,
-      });
-      sat.mesh.position.copy(planetLocalCoords);
-
-      swarm.push(sat);
-      scene.add(sat.mesh);
-      stores.numSatellites.update((x) => ++x);
-    }
     swarm.forEach((sat) => sat.update(dt));
 
     // Move swarm meshes
@@ -212,5 +215,5 @@ export const setupScene = ({ scene, camera }) => {
     );
   };
 
-  return { updateScene };
+  return { updateScene, spawnSatellite };
 };

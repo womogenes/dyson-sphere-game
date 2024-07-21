@@ -3,7 +3,6 @@ import * as THREE from 'three';
 // Selective bloom from https://threejs.org/examples/webgl_postprocessing_unreal_bloom_selective
 
 import { OrbitControls } from '$lib/three/OrbitControls.js';
-import { TrackballControls } from '$lib/three/TrackballControls.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
@@ -11,11 +10,11 @@ import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 
 import { BLOOM_SCENE, PLANET_RAD } from './constants.js';
-import { setupScene } from './setupScene.js';
+import { setupScene } from './setup-scene.js';
 
-export const createScene = (canvas, stats, graphicsContainerEl) => {
+export const createScene = (canvas, stats) => {
   let animationFrameId = null;
-  let isWindowFocused = true;
+  let isWindowFocused = document.hasFocus();
   const parentEl = canvas.parentElement;
 
   const bloomLayer = new THREE.Layers();
@@ -41,7 +40,7 @@ export const createScene = (canvas, stats, graphicsContainerEl) => {
   const { updateScene, spawnSatellite } = setupScene({ scene, camera, clock });
 
   // Controls
-  const controls = new OrbitControls(camera, graphicsContainerEl);
+  const controls = new OrbitControls(camera, parentEl);
   controls.dynamicDampingFactor = 0.2;
   controls.minDistance = PLANET_RAD * 1.1;
   controls.enableDamping = true;

@@ -1,10 +1,12 @@
 <script>
   import { onDestroy, onMount } from 'svelte';
-  import { createScene } from './scene.js';
+  import { createScene } from './render-scene.js';
   import Stats from 'stats.js';
 
   import { game } from '$lib/game.js';
   import Button from '$lib/components/ui/button/button.svelte';
+
+  // Reactive Svelte variable to track stores
   let stores = {};
   let storeSubscriptions = [];
   Object.keys(game.stores).forEach((key) => {
@@ -18,7 +20,7 @@
 
   // Graphics scene
   let stats = new Stats();
-  let canvasEl, graphicsContainerEl;
+  let canvasEl;
   let deleteScene = () => {};
   let spawnSatellite = () => {};
   let tickLoopTimeoutId;
@@ -26,13 +28,9 @@
 
   onMount(() => {
     // Set up 3D scene, stats.js
-    ({ deleteScene, spawnSatellite } = createScene(
-      canvasEl,
-      stats,
-      graphicsContainerEl,
-    ));
+    ({ deleteScene, spawnSatellite } = createScene(canvasEl, stats));
     stats.showPanel(0);
-    graphicsContainerEl.appendChild(stats.dom);
+    canvasEl.parentElement.appendChild(stats.dom);
     stats.dom.classList.toggle('stats-js');
 
     // Game tick
@@ -144,10 +142,7 @@
     </div>
 
     <!-- Graphics -->
-    <div
-      bind:this={graphicsContainerEl}
-      class="absolute left-0 top-0 h-full w-full"
-    >
+    <div class="absolute left-0 top-0 h-full w-full">
       <canvas bind:this={canvasEl} />
     </div>
   </div>

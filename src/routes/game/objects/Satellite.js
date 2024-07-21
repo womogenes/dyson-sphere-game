@@ -8,8 +8,8 @@ export class Satellite {
   });
 
   constructor({ pos, vel, planet }) {
-    this.pos = pos; // x, y, and z components
-    this.vel = vel;
+    this.pos = new THREE.Vector3.copy(pos); // x, y, and z components
+    this.vel = new THREE.Vector3.copy(vel);
     this.planet = planet;
 
     this.mesh = new THREE.Mesh(Satellite.geometry, Satellite.material);

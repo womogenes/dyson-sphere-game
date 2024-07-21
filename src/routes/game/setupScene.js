@@ -6,87 +6,18 @@ import {
   STAR_RAD,
   G,
   PLANET_MASS,
-  STAR_MASS,
 } from './constants.js';
 import { getStarfield } from '$lib/three/StarField.js';
 import { LodCircleGeometry } from '$lib/three/LoDCircleGeometry.js';
 import { game } from '$lib/game.js';
+import { Satellite } from './objects/Satellite.js';
+import { Planet } from './objects/Planet.js';
 
 const stores = game.stores;
 
 // GLOBAL TIME for this scene
 let t = 0;
 let frameCount = 0;
-
-class Planet {
-  constructor({ radius, orbitalRadius, mass }) {
-    this.radius = radius;
-    this.theta = 0;
-    this.pos = new THREE.Vector3();
-    this.vel = new THREE.Vector3();
-    this.orbitalPeriod = 60 * 60 * 0.5; // seconds
-    this.orbitalRadius = orbitalRadius;
-    this.rotation = { x: 0, y: 0, z: 0 };
-    this.mass = mass;
-  }
-
-  update(dt) {
-    this.rotation.y = (t * Math.PI * 2) / 60;
-    this.theta = -(t * 2 * Math.PI) / this.orbitalPeriod + Math.PI;
-
-    this.pos.x = Math.cos(this.theta) * this.orbitalRadius;
-    this.pos.z = Math.sin(this.theta) * this.orbitalRadius;
-
-    // Calculus (blegh)
-    let dTheta = (-2 * Math.PI) / this.orbitalPeriod;
-    this.vel.set(
-      -Math.sin(this.theta) * dTheta * this.orbitalRadius,
-      0,
-      Math.cos(this.theta) * dTheta * this.orbitalRadius,
-    );
-  }
-}
-
-class Satellite {
-  static material = new THREE.MeshPhongMaterial({
-    emissive: true,
-    color: 0xffffff,
-  });
-
-  constructor({ pos, vel, planet }) {
-    this.pos = pos; // x, y, and z components
-    this.vel = vel;
-    this.planet = planet;
-
-    this.mesh = new THREE.Mesh(Satellite.geometry, Satellite.material);
-    this.mesh.layers.enable(BLOOM_SCENE);
-  }
-
-  static getAcceleration(pos, vel) {
-    // Compute acceleration given position and velocity
-    const R = pos.clone().sub(Satellite.planet.pos);
-    const r = R.length();
-
-    return R.multiplyScalar(-(G * Satellite.planet.mass) / (r * r * r));
-  }
-
-  update(dt) {
-    // Velocity Verlet: https://en.wikipedia.org/wiki/Verlet_integration#Velocity_Verlet
-    let acc = Satellite.getAcceleration(this.pos, this.vel);
-    let newPos = this.pos
-      .clone()
-      .addScaledVector(this.vel, dt)
-      .addScaledVector(acc, (dt * dt) / 2);
-    let newAcc = Satellite.getAcceleration(newPos, this.vel);
-    let newVel = this.vel.clone().addScaledVector(acc.add(newAcc), dt / 2);
-
-    this.pos.copy(newPos);
-    this.vel.copy(newVel);
-    this.mesh.lookAt(this.mesh.position.clone().add(this.vel));
-  }
-}
-Satellite.geometry = new THREE.ConeGeometry(200, 400, 8, 1, false);
-Satellite.geometry.rotateX(Math.PI / 2); // Orient point for mesh.lookAt
 
 export const setupScene = ({ scene, camera }) => {
   // Planet
@@ -190,7 +121,7 @@ export const setupScene = ({ scene, camera }) => {
     frameCount++;
 
     // Update planet
-    planet.update(dt);
+    planet.update(t, dt);
     planetMesh.rotation.y = planet.rotation.y;
     orbitMesh.rotation.y = -planet.theta;
 

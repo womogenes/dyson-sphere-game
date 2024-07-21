@@ -159,6 +159,7 @@
     touch-action: manipulation;
     overflow: hidden;
     overscroll-behavior: none;
+    font-size: 10pt;
   }
   :global(div.stats-js) {
     position: absolute !important;

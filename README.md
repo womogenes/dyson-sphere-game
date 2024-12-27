@@ -2,7 +2,7 @@
 
 A game about the future of solar energy.
 
-Built with SvelteKit!
+Built with SvelteKit and three.js
 
 ## Setup
 

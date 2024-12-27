@@ -127,7 +127,7 @@
     </h1>
     <div class="pb-10 sm:pb-40">
       <p>a game about the future of solar energy</p>
-      <p>coming august 2024</p>
+      <p>coming sometime 2025</p>
       <p>
         <a href="/game" class="underline opacity-60">(play the preview here)</a>
       </p>
